@@ -840,7 +840,7 @@ static void printBindingHelp(EmbeddedCli *cli, CliCommandBinding *binding) {
 
 static void initInternalBindings(EmbeddedCli *cli) {
     CliCommandBinding b = {
-            "help",
+            "/help",
             "Print list of commands",
             true,
             NULL,
