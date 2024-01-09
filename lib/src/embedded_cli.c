@@ -893,7 +893,7 @@ static void onHelp(EmbeddedCli *cli, char *tokens, void *context) {
             onUnknownCommand(cli, cmdName);
         }
     } else {
-        writeToOutput(cli, "Command \"help\" receives one or zero arguments");
+        writeToOutput(cli, "Command \"/help\" receives one or zero arguments");
         writeToOutput(cli, lineBreak);
     }
 }
@@ -901,7 +901,7 @@ static void onHelp(EmbeddedCli *cli, char *tokens, void *context) {
 static void onUnknownCommand(EmbeddedCli *cli, const char *name) {
     writeToOutput(cli, "Unknown command: \"");
     writeToOutput(cli, name);
-    writeToOutput(cli, "\". Write \"help\" for a list of available commands");
+    writeToOutput(cli, "\". Write \"/help\" for a list of available commands");
     writeToOutput(cli, lineBreak);
 }
 
