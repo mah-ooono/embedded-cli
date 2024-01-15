@@ -217,6 +217,12 @@ EmbeddedCli *embeddedCliNew(EmbeddedCliConfig *config);
 EmbeddedCli *embeddedCliNewDefault(void);
 
 /**
+ * Enable or disable echo.
+ * @return
+ */
+void embeddedCliSetEcho(EmbeddedCli *cli, bool enable);
+
+/**
  * Receive character and put it to internal buffer
  * Actual processing is done inside embeddedCliProcess
  * You can call this function from something like interrupt service routine,

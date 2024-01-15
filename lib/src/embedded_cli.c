@@ -58,6 +58,13 @@
  */
 #define CLI_FLAG_AUTOCOMPLETE_ENABLED 0x20u
 
+/**
+ * Indicates that characters received are echoed back to the user
+ */
+#define CLI_FLAG_ECHO_ENABLED 0x40u
+
+
+
 typedef struct EmbeddedCliImpl EmbeddedCliImpl;
 typedef struct AutocompletedCommand AutocompletedCommand;
 typedef struct FifoBuf FifoBuf;
@@ -451,6 +458,8 @@ EmbeddedCli *embeddedCliNew(EmbeddedCliConfig *config) {
     if (config->enableAutoComplete)
         SET_FLAG(impl->flags, CLI_FLAG_AUTOCOMPLETE_ENABLED);
 
+    SET_FLAG(impl->flags, CLI_FLAG_ECHO_ENABLED);
+
     impl->rxBuffer.size = config->rxBufferSize;
     impl->rxBuffer.front = 0;
     impl->rxBuffer.back = 0;
@@ -467,6 +476,16 @@ EmbeddedCli *embeddedCliNew(EmbeddedCliConfig *config) {
 
 EmbeddedCli *embeddedCliNewDefault(void) {
     return embeddedCliNew(embeddedCliDefaultConfig());
+}
+
+void embeddedCliSetEcho(EmbeddedCli *cli, bool enable) {
+    PREPARE_IMPL(cli);
+
+    if (enable) {
+        SET_FLAG(impl->flags, CLI_FLAG_ECHO_ENABLED);
+    } else {
+        UNSET_U8FLAG(impl->flags, CLI_FLAG_ECHO_ENABLED);
+    }
 }
 
 void embeddedCliReceiveChar(EmbeddedCli *cli, char c) {
@@ -707,7 +726,9 @@ static void onCharInput(EmbeddedCli *cli, char c) {
     ++impl->cmdSize;
     impl->cmdBuffer[impl->cmdSize] = '\0';
 
-    cli->writeChar(cli, c);
+    if (impl->flags & CLI_FLAG_ECHO_ENABLED) {
+        cli->writeChar(cli, c);
+    }
 }
 
 static void onControlInput(EmbeddedCli *cli, char c) {
