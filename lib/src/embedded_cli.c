@@ -553,7 +553,7 @@ void embeddedCliPrint(EmbeddedCli *cli, const char *string) {
     PREPARE_IMPL(cli);
 
     // remove chars for autocompletion and live command
-    if (!IS_FLAG_SET(impl->flags, CLI_FLAG_DIRECT_PRINT))
+    if (!IS_FLAG_SET(impl->flags, CLI_FLAG_DIRECT_PRINT) && !IS_FLAG_SET(impl->flags, CLI_FLAG_ECHO_ENABLED))
         clearCurrentLine(cli);
 
     // print provided string
@@ -561,7 +561,7 @@ void embeddedCliPrint(EmbeddedCli *cli, const char *string) {
     writeToOutput(cli, lineBreak);
 
     // print current command back to screen
-    if (!IS_FLAG_SET(impl->flags, CLI_FLAG_DIRECT_PRINT)) {
+    if (!IS_FLAG_SET(impl->flags, CLI_FLAG_DIRECT_PRINT) && !IS_FLAG_SET(impl->flags, CLI_FLAG_ECHO_ENABLED)) {
         writeToOutput(cli, impl->invitation);
         writeToOutput(cli, impl->cmdBuffer);
         impl->inputLineLength = impl->cmdSize;
@@ -743,7 +743,9 @@ static void onControlInput(EmbeddedCli *cli, char c) {
         // try to autocomplete command and then process it
         onAutocompleteRequest(cli);
 
-        writeToOutput(cli, lineBreak);
+        if(IS_FLAG_SET(impl->flags, CLI_FLAG_ECHO_ENABLED)) {
+            writeToOutput(cli, lineBreak);
+        }
 
         if (impl->cmdSize > 0)
             parseCommand(cli);
@@ -1009,6 +1011,9 @@ static void printLiveAutocompletion(EmbeddedCli *cli) {
 
 static void onAutocompleteRequest(EmbeddedCli *cli) {
     PREPARE_IMPL(cli);
+
+    if (!IS_FLAG_SET(impl->flags, CLI_FLAG_AUTOCOMPLETE_ENABLED))
+        return;
 
     AutocompletedCommand cmd = getAutocompletedCommand(cli, impl->cmdBuffer);
 
